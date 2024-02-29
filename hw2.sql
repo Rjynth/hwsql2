@@ -11,16 +11,27 @@ WHERE LOWER(Track_name) LIKE '%jazz%';
 
 SELECT Artist_name
 FROM Artists
-WHERE LENGTH(SPLIT_PART(Artist_name, ' ', 1)) = 1;
+WHERE Artist_name NOT LIKE '% %';
 
 SELECT Track_name
 FROM Tracks
 WHERE Track_time >= 210;
 
+/*  
+fixed 
+*/  
+
 SELECT Track_name, Track_time
 FROM Tracks
-ORDER BY Track_time DESC
-LIMIT 1;
+WHERE Track_time = (
+    SELECT MAX(Track_time)
+    FROM Tracks
+);
+
+/*  
+fixed 
+*/  
+
 
 SELECT Genres.Genre_name, COUNT(Artists.ArtistID) AS Number_of_Artists
 FROM Genres
@@ -40,13 +51,23 @@ FROM Tracks
 INNER JOIN Albums ON Tracks.AlbumID = Albums.AlbumID
 GROUP BY Albums.Albums_name;
 
+/*  
+fixed 
+*/  
 
 SELECT Artists.Artist_name
 FROM Artists
-LEFT JOIN album_artists ON Artists.ArtistID = album_artists.ArtistID
-LEFT JOIN Albums ON album_artists.AlbumID = Albums.AlbumID
-WHERE Albums.Albums_year <> 2020 OR Albums.Albums_year IS NULL;
+WHERE Artists.ArtistID NOT IN (
+    SELECT album_artists.ArtistID
+    FROM album_artists
+    JOIN Albums ON album_artists.AlbumID = Albums.AlbumID
+    WHERE Albums.Albums_year = 2020
+)
 
+
+/*  
+fixed 
+*/  
 
 SELECT collection.name
 FROM collection
